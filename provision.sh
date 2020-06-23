@@ -36,7 +36,25 @@ function ckan_install_TEST()
 
 function ckan_install_SHELL()
 {
+    if [[ $(ckan available | wc -l) == "2" ]]; then
+	ckan update
+    fi
     ckan install --headless --no-recommends "$1"
+}
+
+function ckan_allow_DESC()
+{
+    echo "ckan allow version \"$1\""
+}
+
+function ckan_allow_TEST()
+{
+    ckan compat list | awk 'BEGIN { status = 1; } $1 == "'$1'" { status=0; } END { exit(status); }'
+}
+
+function ckan_allow_SHELL()
+{
+    ckan compat add "$1"
 }
 
 # ================================================================================
@@ -61,8 +79,11 @@ function converge_defaults()
     fi
 
     requirement can_execute ckan
+    requirement ckan_allow 1.8
+    requirement ckan_allow 1.7    
     requirement ckan_install RasterPropMonitor-Core
     requirement ckan_install MechJeb2
+    requirement ckan_install DE-IVAExtension
 }
 
 converge "$@"
