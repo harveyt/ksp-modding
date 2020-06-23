@@ -21,6 +21,25 @@ KSP="$STEAMAPPS/Kerbal Space Program"
 MONO_PATHS=/etc/paths.d/mono-commands
 
 # ================================================================================
+# CKAN
+#
+
+function ckan_install_DESC()
+{
+    echo "ckan install \"$1\""
+}
+
+function ckan_install_TEST()
+{
+    ckan list --porcelain | awk 'BEGIN { status = 1; } $2 == "'$1'" { status=0; } END { exit(status); }'
+}
+
+function ckan_install_SHELL()
+{
+    ckan install --headless --no-recommends "$1"
+}
+
+# ================================================================================
 # Main
 #
 
@@ -40,6 +59,10 @@ function converge_defaults()
     if [[ -f $MONO_PATHS ]]; then
 	export PATH=$PATH:$(cat $MONO_PATHS)
     fi
+
+    requirement can_execute ckan
+    requirement ckan_install RasterPropMonitor-Core
+    requirement ckan_install MechJeb2
 }
 
 converge "$@"
